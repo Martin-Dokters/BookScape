@@ -54,7 +54,7 @@ footer {
     height: auto;
     margin-right: 20px;
     border-radius: 10px;
-    transition: transform 0.6s ease;
+    transition: transform 2.6s ease;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     cursor: pointer;
     transform-origin: center; /* Ursprung der 3D-Drehung auf die linke Seite setzen */
@@ -63,7 +63,7 @@ footer {
 
 /* Hover-Effekt: Logo flippt nach rechts */
 .logo:hover {
-    transform: rotateY(0deg) rotateX(0deg) rotateZ(360deg); /* 3D-Rotation zur rechten Seite */
+    transform: rotateY(0deg) rotateX(0deg) rotateZ(10060deg); /* 3D-Rotation zur rechten Seite */
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
     filter: brightness(1.2); /* Logo wird heller beim Hover */
 }
