@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kundenbewertungen</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <img src="logo.png" alt="Bookscape Logo" class="logo">
+            <div class="header-title">
+                <h1>Bookscape</h1>
+                <p>Dark Romance Buchladen in Hamburg</p>
+            </div>
+        </div>
+        <nav>
+            <a href="index.html" class="nav-link active" data-page="index">Startseite</a>
+            <a href="about.html" class="nav-link" data-page="about">Über uns</a>
+            <a href="team.html" class="nav-link" data-page="team">Unser Team</a>
+            <a href="books.html" class="nav-link" data-page="books">Bestseller</a>
+            <a href="reviews.html" class="nav-link" data-page="reviews">Kundenbewertungen</a>
+            <a href="newsletter.html" class="nav-link" data-page="newsletter">Newsletter</a>
+            <a href="events.html" class="nav-link" data-page="events">Veranstaltungen</a>
+            <a href="gallery.html" class="nav-link" data-page="gallery">Galerie</a>
+            <a href="contact.html" class="nav-link" data-page="contact">Kontakt</a>
+        </nav>
+    </header>
+    
+
+    <div class="content">
+        <h2>Was unsere Kunden sagen</h2>
+    
+        <!-- Container für Kundenbewertungen -->
+        <div id="reviews-container" class="reviews-container"></div>
+    
+        <!-- Formular für neue Bewertungen -->
+        <div class="new-review-form">
+            <h3>Teilen Sie Ihre Erfahrung</h3>
+            <form id="reviewForm">
+                <input type="text" id="name" placeholder="Ihr Name" required>
+                <div class="rating-input">
+                    <label>Bewertung:</label>
+                    <select id="rating" required>
+                        <option value="5">⭐⭐⭐⭐⭐ (5 Sterne)</option>
+                        <option value="4">⭐⭐⭐⭐ (4 Sterne)</option>
+                        <option value="3">⭐⭐⭐ (3 Sterne)</option>
+                        <option value="2">⭐⭐ (2 Sterne)</option>
+                        <option value="1">⭐ (1 Stern)</option>
+                    </select>
+                </div>
+                <textarea id="reviewText" placeholder="Ihre Bewertung" required></textarea>
+                <button type="submit">Bewertung abgeben</button>
+            </form>
+        </div>
+    </div>
+    
+    
+    
+
+    <footer>&copy; 2024 Bookscape. Alle Rechte vorbehalten.</footer>
+
+    <script>
+        // Funktion zum Hervorheben der aktiven Seite
+        function highlightActivePage() {
+            const currentPage = window.location.pathname.split("/").pop().split(".")[0];
+            document.querySelectorAll(".nav-link").forEach(link => {
+                const page = link.getAttribute("data-page");
+                link.classList.remove("active");
+                if (page === currentPage) {
+                    link.classList.add("active");
+                }
+            });
+        }
+    
+        // Funktion zum Anwenden des Fading-In-Effekts
+        function applyFadeIn() {
+            const content = document.querySelector(".content");
+            if (content && !content.classList.contains("fade-in")) {
+                requestAnimationFrame(() => {
+                    content.classList.add("fade-in");
+                });
+            }
+        }
+    
+        function loadReviews() {
+    const reviewsContainer = document.getElementById("reviews-container");
+    reviewsContainer.innerHTML = "";
+
+    const reviews = JSON.parse(localStorage.getItem("reviews")) || [];
+
+    if (reviews.length === 0) {
+        reviewsContainer.innerHTML = "<p>Keine Bewertungen vorhanden.</p>";
+        return;
+    }
+
+    reviews.forEach(review => {
+        const reviewElement = document.createElement("div");
+        reviewElement.classList.add("review-card");
+        reviewElement.innerHTML = `
+            <h3>${review.name}</h3>
+            <div class="review-rating">${'⭐'.repeat(review.rating)}</div>
+            <p class="review-text">${review.text}</p>
+        `;
+        reviewsContainer.appendChild(reviewElement);
+    });
+}
+
+    
+        // Funktion zum Speichern einer neuen Rezension
+        function saveReview(event) {
+            event.preventDefault();
+            const name = document.getElementById("name").value;
+            const rating = parseInt(document.getElementById("rating").value);
+            const reviewText = document.getElementById("reviewText").value;
+    
+            // Validierung der Eingaben
+            if (!name || !reviewText || isNaN(rating)) {
+                alert("Bitte füllen Sie alle Felder aus.");
+                return;
+            }
+    
+            // Neue Rezension erstellen
+            const newReview = {
+                name: name,
+                rating: rating,
+                text: reviewText,
+            };
+    
+            try {
+                // Rezensionen aus localStorage laden, neue hinzufügen und speichern
+                const reviews = JSON.parse(localStorage.getItem("reviews")) || [];
+                reviews.push(newReview);
+                localStorage.setItem("reviews", JSON.stringify(reviews));
+    
+                // Formular zurücksetzen und Rezensionen neu laden
+                document.getElementById("reviewForm").reset();
+                loadReviews();
+            } catch (error) {
+                console.error("Fehler beim Speichern der Rezension:", error);
+                alert("Fehler beim Speichern der Bewertung. Bitte versuchen Sie es erneut.");
+            }
+        }
+    
+        // Fading-Out beim Navigieren
+        const links = document.querySelectorAll(".nav-link");
+        links.forEach(link => {
+            link.addEventListener("click", (event) => {
+                event.preventDefault();
+                const href = link.getAttribute("href");
+                const content = document.querySelector(".content");
+                if (content) {
+                    content.classList.remove("fade-in");
+                    content.classList.add("fade-out");
+                }
+                setTimeout(() => {
+                    window.location.href = href;
+                }, 500);
+            });
+        });
+    
+        // Event-Listener hinzufügen
+        document.addEventListener("DOMContentLoaded", () => {
+            highlightActivePage();
+            applyFadeIn();
+            loadReviews();
+            document.getElementById("reviewForm").addEventListener("submit", saveReview);
+        });
+    </script>
+    
+    
+    
+</body>
+</html>
