@@ -1,39 +1,33 @@
-const fs = require("fs");
-const path = require("path");
-
-const filePath = path.join(__dirname, "../data/reviews.json");
-
-function readReviews() {
-    if (!fs.existsSync(filePath)) {
-        fs.writeFileSync(filePath, JSON.stringify([]));
-    }
-    const data = fs.readFileSync(filePath, "utf8");
-    return JSON.parse(data);
-}
-
-function writeReviews(reviews) {
-    fs.writeFileSync(filePath, JSON.stringify(reviews, null, 2));
-}
+import fs from 'fs';
+import path from 'path';
 
 export default function handler(req, res) {
-    if (req.method === "GET") {
-        const reviews = readReviews();
-        res.status(200).json(reviews);
-    } else if (req.method === "POST") {
-        const { name, rating, text } = req.body;
-        const date = new Date().toISOString();
+    const filePath = path.join(process.cwd(), 'data', 'reviews.json');
 
-        if (!name || !text || isNaN(rating)) {
-            return res.status(400).json({ error: "Ungültige Eingabe." });
+    // Rezensionen laden
+    if (req.method === 'GET') {
+        try {
+            const data = fs.readFileSync(filePath, 'utf8');
+            const reviews = JSON.parse(data);
+            res.status(200).json(reviews);
+        } catch (error) {
+            console.error('Fehler beim Laden der Rezensionen:', error);
+            res.status(500).json({ message: 'Fehler beim Laden der Rezensionen.' });
         }
+    }
 
-        const newReview = { name, rating, text, date };
-        const reviews = readReviews();
-        reviews.push(newReview);
-        writeReviews(reviews);
-
-        res.status(201).json(newReview);
-    } else {
-        res.status(405).json({ error: "Methode nicht erlaubt." });
+    // Rezensionen speichern
+    if (req.method === 'POST') {
+        const newReview = req.body;
+        try {
+            const data = fs.readFileSync(filePath, 'utf8');
+            const reviews = JSON.parse(data);
+            reviews.push(newReview);
+            fs.writeFileSync(filePath, JSON.stringify(reviews, null, 2));
+            res.status(200).json({ message: 'Rezension erfolgreich gespeichert.' });
+        } catch (error) {
+            console.error('Fehler beim Speichern der Rezension:', error);
+            res.status(500).json({ message: 'Fehler beim Speichern der Rezension.' });
+        }
     }
 }
