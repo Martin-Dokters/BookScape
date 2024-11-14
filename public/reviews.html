@@ -62,111 +62,73 @@
     <footer>&copy; 2024 Bookscape. Alle Rechte vorbehalten.</footer>
 
     <script>
-        // Funktion zum Hervorheben der aktiven Seite
-        function highlightActivePage() {
-            const currentPage = window.location.pathname.split("/").pop().split(".")[0];
-            document.querySelectorAll(".nav-link").forEach(link => {
-                const page = link.getAttribute("data-page");
-                link.classList.remove("active");
-                if (page === currentPage) {
-                    link.classList.add("active");
-                }
-            });
-        }
-    
-        // Funktion zum Anwenden des Fading-In-Effekts
-        function applyFadeIn() {
-            const content = document.querySelector(".content");
-            if (content && !content.classList.contains("fade-in")) {
-                requestAnimationFrame(() => {
-                    content.classList.add("fade-in");
-                });
-            }
-        }
-    
-        function loadReviews() {
+       async function loadReviews() {
     const reviewsContainer = document.getElementById("reviews-container");
     reviewsContainer.innerHTML = "";
 
-    const reviews = JSON.parse(localStorage.getItem("reviews")) || [];
+    try {
+        const response = await fetch('/api/reviews');
+        const reviews = await response.json();
 
-    if (reviews.length === 0) {
-        reviewsContainer.innerHTML = "<p>Keine Bewertungen vorhanden.</p>";
+        if (reviews.length === 0) {
+            reviewsContainer.innerHTML = "<p>Keine Bewertungen vorhanden.</p>";
+            return;
+        }
+
+        reviews.forEach(review => {
+            const reviewElement = document.createElement("div");
+            reviewElement.classList.add("review-card");
+            reviewElement.innerHTML = `
+                <h3>${review.name}</h3>
+                <div class="review-rating">${'⭐'.repeat(review.rating)}</div>
+                <p class="review-text">${review.text}</p>
+            `;
+            reviewsContainer.appendChild(reviewElement);
+        });
+    } catch (error) {
+        console.error('Fehler beim Laden der Rezensionen:', error);
+        reviewsContainer.innerHTML = "<p>Fehler beim Laden der Rezensionen.</p>";
+    }
+}
+
+async function saveReview(event) {
+    event.preventDefault();
+    const name = document.getElementById("name").value;
+    const rating = parseInt(document.getElementById("rating").value);
+    const reviewText = document.getElementById("reviewText").value;
+
+    if (!name || !reviewText || isNaN(rating)) {
+        alert("Bitte füllen Sie alle Felder aus.");
         return;
     }
 
-    reviews.forEach(review => {
-        const reviewElement = document.createElement("div");
-        reviewElement.classList.add("review-card");
-        reviewElement.innerHTML = `
-            <h3>${review.name}</h3>
-            <div class="review-rating">${'⭐'.repeat(review.rating)}</div>
-            <p class="review-text">${review.text}</p>
-        `;
-        reviewsContainer.appendChild(reviewElement);
-    });
+    const newReview = {
+        name: name,
+        rating: rating,
+        text: reviewText,
+    };
+
+    try {
+        const response = await fetch('/api/reviews', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(newReview),
+        });
+
+        if (response.ok) {
+            document.getElementById("reviewForm").reset();
+            loadReviews();
+        } else {
+            throw new Error('Fehler beim Speichern der Bewertung.');
+        }
+    } catch (error) {
+        console.error('Fehler beim Speichern der Rezension:', error);
+        alert('Fehler beim Speichern der Bewertung. Bitte versuchen Sie es erneut.');
+    }
 }
 
-    
-        // Funktion zum Speichern einer neuen Rezension
-        function saveReview(event) {
-            event.preventDefault();
-            const name = document.getElementById("name").value;
-            const rating = parseInt(document.getElementById("rating").value);
-            const reviewText = document.getElementById("reviewText").value;
-    
-            // Validierung der Eingaben
-            if (!name || !reviewText || isNaN(rating)) {
-                alert("Bitte füllen Sie alle Felder aus.");
-                return;
-            }
-    
-            // Neue Rezension erstellen
-            const newReview = {
-                name: name,
-                rating: rating,
-                text: reviewText,
-            };
-    
-            try {
-                // Rezensionen aus localStorage laden, neue hinzufügen und speichern
-                const reviews = JSON.parse(localStorage.getItem("reviews")) || [];
-                reviews.push(newReview);
-                localStorage.setItem("reviews", JSON.stringify(reviews));
-    
-                // Formular zurücksetzen und Rezensionen neu laden
-                document.getElementById("reviewForm").reset();
-                loadReviews();
-            } catch (error) {
-                console.error("Fehler beim Speichern der Rezension:", error);
-                alert("Fehler beim Speichern der Bewertung. Bitte versuchen Sie es erneut.");
-            }
-        }
-    
-        // Fading-Out beim Navigieren
-        const links = document.querySelectorAll(".nav-link");
-        links.forEach(link => {
-            link.addEventListener("click", (event) => {
-                event.preventDefault();
-                const href = link.getAttribute("href");
-                const content = document.querySelector(".content");
-                if (content) {
-                    content.classList.remove("fade-in");
-                    content.classList.add("fade-out");
-                }
-                setTimeout(() => {
-                    window.location.href = href;
-                }, 500);
-            });
-        });
-    
-        // Event-Listener hinzufügen
-        document.addEventListener("DOMContentLoaded", () => {
-            highlightActivePage();
-            applyFadeIn();
-            loadReviews();
-            document.getElementById("reviewForm").addEventListener("submit", saveReview);
-        });
     </script>
     
     
