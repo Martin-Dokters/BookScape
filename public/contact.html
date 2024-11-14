@@ -86,7 +86,40 @@
                 }
             });
         }
-    
+        async function loadReviews() {
+        const reviewsContainer = document.getElementById("reviews-container");
+        reviewsContainer.innerHTML = "<p>Rezensionen werden geladen...</p>";
+
+        try {
+        const response = await fetch('/api/reviews');
+        if (!response.ok) {
+            throw new Error(`Fehler beim Abrufen der API: ${response.status} ${response.statusText}`);
+        }
+
+        const reviews = await response.json();
+
+        if (reviews.length === 0) {
+            reviewsContainer.innerHTML = "<p>Keine Bewertungen vorhanden.</p>";
+            return;
+        }
+
+        reviewsContainer.innerHTML = "";
+        reviews.forEach(review => {
+            const reviewElement = document.createElement("div");
+            reviewElement.classList.add("review-card");
+            reviewElement.innerHTML = `
+                <h3>${review.name}</h3>
+                <div class="review-rating">${'⭐'.repeat(review.rating)}</div>
+                <p class="review-text">${review.text}</p>
+            `;
+            reviewsContainer.appendChild(reviewElement);
+        });
+    } catch (error) {
+        console.error('Fehler beim Laden der Rezensionen:', error);
+        reviewsContainer.innerHTML = `<p>Fehler beim Laden der Rezensionen: ${error.message}</p>`;
+    }
+}
+
         // Funktion zum Anwenden des Fading-In-Effekts
         function applyFadeIn() {
             const content = document.querySelector(".content");
