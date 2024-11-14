@@ -27,11 +27,15 @@
             <a href="contact.html" class="nav-link" data-page="contact">Kontakt</a>
         </nav>
     </header>
+    
 
     <div class="content">
         <h2>Was unsere Kunden sagen</h2>
+    
+        <!-- Container für Kundenbewertungen -->
         <div id="reviews-container" class="reviews-container"></div>
-
+    
+        <!-- Formular für neue Bewertungen -->
         <div class="new-review-form">
             <h3>Teilen Sie Ihre Erfahrung</h3>
             <form id="reviewForm">
@@ -51,80 +55,121 @@
             </form>
         </div>
     </div>
+    
+    
+    
 
     <footer>&copy; 2024 Bookscape. Alle Rechte vorbehalten.</footer>
 
     <script>
-        const API_URL = "/api/reviews";
-
-        async function loadReviews() {
-            const reviewsContainer = document.getElementById("reviews-container");
-            reviewsContainer.innerHTML = "";
-
-            try {
-                const response = await fetch(API_URL);
-                const reviews = await response.json();
-
-                if (reviews.length === 0) {
-                    reviewsContainer.innerHTML = "<p>Keine Bewertungen vorhanden.</p>";
-                    return;
+        // Funktion zum Hervorheben der aktiven Seite
+        function highlightActivePage() {
+            const currentPage = window.location.pathname.split("/").pop().split(".")[0];
+            document.querySelectorAll(".nav-link").forEach(link => {
+                const page = link.getAttribute("data-page");
+                link.classList.remove("active");
+                if (page === currentPage) {
+                    link.classList.add("active");
                 }
-
-                reviews.forEach(review => {
-                    const reviewElement = document.createElement("div");
-                    reviewElement.classList.add("review-card");
-                    reviewElement.innerHTML = `
-                        <h3>${review.name}</h3>
-                        <div class="review-rating">${'⭐'.repeat(review.rating)}</div>
-                        <p class="review-text">${review.text}</p>
-                        <small>${new Date(review.date).toLocaleDateString()}</small>
-                    `;
-                    reviewsContainer.appendChild(reviewElement);
+            });
+        }
+    
+        // Funktion zum Anwenden des Fading-In-Effekts
+        function applyFadeIn() {
+            const content = document.querySelector(".content");
+            if (content && !content.classList.contains("fade-in")) {
+                requestAnimationFrame(() => {
+                    content.classList.add("fade-in");
                 });
-            } catch (error) {
-                console.error("Fehler beim Laden der Rezensionen:", error);
-                reviewsContainer.innerHTML = "<p>Fehler beim Laden der Rezensionen.</p>";
             }
         }
+    
+        function loadReviews() {
+    const reviewsContainer = document.getElementById("reviews-container");
+    reviewsContainer.innerHTML = "";
 
-        async function saveReview(event) {
+    const reviews = JSON.parse(localStorage.getItem("reviews")) || [];
+
+    if (reviews.length === 0) {
+        reviewsContainer.innerHTML = "<p>Keine Bewertungen vorhanden.</p>";
+        return;
+    }
+
+    reviews.forEach(review => {
+        const reviewElement = document.createElement("div");
+        reviewElement.classList.add("review-card");
+        reviewElement.innerHTML = `
+            <h3>${review.name}</h3>
+            <div class="review-rating">${'⭐'.repeat(review.rating)}</div>
+            <p class="review-text">${review.text}</p>
+        `;
+        reviewsContainer.appendChild(reviewElement);
+    });
+}
+
+    
+        // Funktion zum Speichern einer neuen Rezension
+        function saveReview(event) {
             event.preventDefault();
             const name = document.getElementById("name").value;
             const rating = parseInt(document.getElementById("rating").value);
             const reviewText = document.getElementById("reviewText").value;
-
+    
+            // Validierung der Eingaben
             if (!name || !reviewText || isNaN(rating)) {
                 alert("Bitte füllen Sie alle Felder aus.");
                 return;
             }
-
-            const newReview = { name, rating, text: reviewText };
-
+    
+            // Neue Rezension erstellen
+            const newReview = {
+                name: name,
+                rating: rating,
+                text: reviewText,
+            };
+    
             try {
-                const response = await fetch(API_URL, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(newReview),
-                });
-
-                if (response.ok) {
-                    document.getElementById("reviewForm").reset();
-                    loadReviews();
-                } else {
-                    alert("Fehler beim Speichern der Bewertung.");
-                }
+                // Rezensionen aus localStorage laden, neue hinzufügen und speichern
+                const reviews = JSON.parse(localStorage.getItem("reviews")) || [];
+                reviews.push(newReview);
+                localStorage.setItem("reviews", JSON.stringify(reviews));
+    
+                // Formular zurücksetzen und Rezensionen neu laden
+                document.getElementById("reviewForm").reset();
+                loadReviews();
             } catch (error) {
                 console.error("Fehler beim Speichern der Rezension:", error);
-                alert("Fehler beim Speichern der Bewertung.");
+                alert("Fehler beim Speichern der Bewertung. Bitte versuchen Sie es erneut.");
             }
         }
-
+    
+        // Fading-Out beim Navigieren
+        const links = document.querySelectorAll(".nav-link");
+        links.forEach(link => {
+            link.addEventListener("click", (event) => {
+                event.preventDefault();
+                const href = link.getAttribute("href");
+                const content = document.querySelector(".content");
+                if (content) {
+                    content.classList.remove("fade-in");
+                    content.classList.add("fade-out");
+                }
+                setTimeout(() => {
+                    window.location.href = href;
+                }, 500);
+            });
+        });
+    
+        // Event-Listener hinzufügen
         document.addEventListener("DOMContentLoaded", () => {
+            highlightActivePage();
+            applyFadeIn();
             loadReviews();
             document.getElementById("reviewForm").addEventListener("submit", saveReview);
         });
     </script>
+    
+    
+    
 </body>
 </html>
