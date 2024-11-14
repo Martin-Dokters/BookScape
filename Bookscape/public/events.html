@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Veranstaltungen</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <img src="logo.png" alt="Bookscape Logo" class="logo">
+            <div class="header-title">
+                <h1>Bookscape</h1>
+                <p>Dark Romance Buchladen in Hamburg</p>
+            </div>
+        </div>
+        <nav>
+            <a href="index.html" class="nav-link active" data-page="index">Startseite</a>
+            <a href="about.html" class="nav-link" data-page="about">Über uns</a>
+            <a href="team.html" class="nav-link" data-page="team">Unser Team</a>
+            <a href="books.html" class="nav-link" data-page="books">Bestseller</a>
+            <a href="reviews.html" class="nav-link" data-page="reviews">Kundenbewertungen</a>
+            <a href="newsletter.html" class="nav-link" data-page="newsletter">Newsletter</a>
+            <a href="events.html" class="nav-link" data-page="events">Veranstaltungen</a>
+            <a href="gallery.html" class="nav-link" data-page="gallery">Galerie</a>
+            <a href="contact.html" class="nav-link" data-page="contact">Kontakt</a>
+        </nav>
+    </header>
+    
+    <div class="content">
+        <h2>Kommende Veranstaltungen</h2>
+
+        <!-- Zeitachse der Veranstaltungen -->
+        <div class="events-timeline">
+            <!-- Veranstaltung 1 -->
+            <div class="event-card">
+                <div class="event-date">
+                    <h3>15. November</h3>
+                    <p>18:00 Uhr</p>
+                </div>
+                <div class="event-details">
+                    <h3>Lesung: "Dunkle Leidenschaft"</h3>
+                    <p>Eine spannende Lesung aus dem neuesten Bestseller von Jane Doe.</p>
+                    <p><strong>Ort:</strong> Bookscape Buchladen, Lesesaal</p>
+                    <button>Mehr erfahren</button>
+                </div>
+            </div>
+
+            <!-- Veranstaltung 2 -->
+            <div class="event-card">
+                <div class="event-date">
+                    <h3>22. November</h3>
+                    <p>14:00 Uhr</p>
+                </div>
+                <div class="event-details">
+                    <h3>Buchsignierung mit Jane Doe</h3>
+                    <p>Treffen Sie die Bestsellerautorin persönlich und lassen Sie Ihr Buch signieren.</p>
+                    <p><strong>Ort:</strong> Bookscape Buchladen, Signaturbereich</p>
+                    <button>Mehr erfahren</button>
+                </div>
+            </div>
+
+            <!-- Veranstaltung 3 -->
+            <div class="event-card">
+                <div class="event-date">
+                    <h3>30. November</h3>
+                    <p>16:00 Uhr</p>
+                </div>
+                <div class="event-details">
+                    <h3>Workshop: "Schreiben von Dark Romance"</h3>
+                    <p>Lernen Sie die Geheimnisse des Schreibens von Dark Romance von erfahrenen Autoren.</p>
+                    <p><strong>Ort:</strong> Bookscape Buchladen, Seminarraum</p>
+                    <button>Mehr erfahren</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>&copy; 2024 Bookscape. Alle Rechte vorbehalten.</footer>
+    <script>
+        // Funktion zum Hervorheben der aktiven Seite
+        function highlightActivePage() {
+            const currentPage = window.location.pathname.split("/").pop().split(".")[0];
+    
+            // Alle Navigationslinks durchlaufen und die aktive Seite hervorheben
+            document.querySelectorAll(".nav-link").forEach(link => {
+                const page = link.getAttribute("data-page");
+    
+                // Entfernt die Klasse 'active' von allen Links
+                link.classList.remove("active");
+    
+                // Fügt die Klasse 'active' hinzu, wenn die Seite übereinstimmt
+                if (page === currentPage) {
+                    link.classList.add("active");
+                }
+            });
+        }
+    
+        // Funktion zum Anwenden des Fading-In-Effekts
+        function applyFadeIn() {
+            const content = document.querySelector(".content");
+    
+            // Fading-In der Inhalte
+            if (content && !content.classList.contains("fade-in")) {
+                requestAnimationFrame(() => {
+                    content.classList.add("fade-in");
+                });
+            }
+        }
+    
+        // Fading-In und Hervorhebung der aktiven Seite beim Laden der Seite
+        window.addEventListener("load", () => {
+            highlightActivePage();
+            applyFadeIn();
+        });
+        document.addEventListener("DOMContentLoaded", () => {
+            highlightActivePage();
+            applyFadeIn();
+        });
+    
+        // Fading-Out beim Navigieren
+        const links = document.querySelectorAll(".nav-link");
+        links.forEach(link => {
+            link.addEventListener("click", (event) => {
+                event.preventDefault();
+                const href = link.getAttribute("href");
+                const content = document.querySelector(".content");
+    
+                // Fading-Out-Effekt
+                if (content) {
+                    content.classList.remove("fade-in");
+                    content.classList.add("fade-out");
+                }
+    
+                // Verzögerte Navigation, um den Fading-Out-Effekt anzuzeigen
+                setTimeout(() => {
+                    window.location.href = href;
+                }, 500);
+            });
+        });
+    </script>
+    
+    
+    
+</body>
+</html>

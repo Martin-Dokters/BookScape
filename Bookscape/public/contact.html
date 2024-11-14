@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kontakt</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <img src="logo.png" alt="Bookscape Logo" class="logo">
+            <div class="header-title">
+                <h1>Bookscape</h1>
+                <p>Dark Romance Buchladen in Hamburg</p>
+            </div>
+        </div>
+        <nav>
+            <a href="index.html" class="nav-link active" data-page="index">Startseite</a>
+            <a href="about.html" class="nav-link" data-page="about">Über uns</a>
+            <a href="team.html" class="nav-link" data-page="team">Unser Team</a>
+            <a href="books.html" class="nav-link" data-page="books">Bestseller</a>
+            <a href="reviews.html" class="nav-link" data-page="reviews">Kundenbewertungen</a>
+            <a href="newsletter.html" class="nav-link" data-page="newsletter">Newsletter</a>
+            <a href="events.html" class="nav-link" data-page="events">Veranstaltungen</a>
+            <a href="gallery.html" class="nav-link" data-page="gallery">Galerie</a>
+            <a href="contact.html" class="nav-link" data-page="contact">Kontakt</a>
+        </nav>
+    </header>
+    
+    
+
+    <div class="content">
+        <h2>Kontaktieren Sie uns</h2>
+
+        <div class="contact-container">
+            <!-- Linke Seite: Kontaktinformationen -->
+            <div class="contact-info">
+                <h3>Unsere Adresse</h3>
+                <p><strong>Adresse:</strong> Mönckebergstraße 1, 20095 Hamburg</p>
+                <p><strong>E-Mail:</strong> <a href="mailto:info@bookscape.de">info@bookscape.de</a></p>
+                <p><strong>Telefon:</strong> <a href="tel:+4940123456789">040-123456789</a></p>
+                <p><strong>Öffnungszeiten:</strong></p>
+                <ul>
+                    <li>Montag - Freitag: 10:00 - 18:00 Uhr</li>
+                    <li>Samstag: 10:00 - 16:00 Uhr</li>
+                    <li>Sonntag: Geschlossen</li>
+                </ul>
+            </div>
+
+            <!-- Rechte Seite: Kontaktformular -->
+            <div class="contact-form">
+                <h3>Schreiben Sie uns eine Nachricht</h3>
+                <form action="#" method="post">
+                    <input type="text" name="name" placeholder="Ihr Name" required>
+                    <input type="email" name="email" placeholder="Ihre E-Mail-Adresse" required>
+                    <textarea name="message" placeholder="Ihre Nachricht" required></textarea>
+                    <button type="submit">Nachricht senden</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Eingebettete Google Maps Karte -->
+        <div class="map-container">
+            <h3>Besuchen Sie uns</h3>
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2430.2819126261457!2d9.993682515747532!3d53.5507309800245!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47b18f0229b0e1d3%3A0x1aef1c2e0c0244f!2sM%C3%B6nckebergstra%C3%9Fe%2C%2020095%20Hamburg!5e0!3m2!1sde!2sde!4v1636313890918!5m2!1sde!2sde" allowfullscreen="" loading="lazy"></iframe>
+        </div>
+    </div>
+
+    <footer>&copy; 2024 Bookscape. Alle Rechte vorbehalten.</footer>
+    <script>
+        // Funktion zum Hervorheben der aktiven Seite
+        function highlightActivePage() {
+            const currentPage = window.location.pathname.split("/").pop().split(".")[0];
+    
+            // Alle Navigationslinks durchlaufen und die aktive Seite hervorheben
+            document.querySelectorAll(".nav-link").forEach(link => {
+                const page = link.getAttribute("data-page");
+    
+                // Entfernt die Klasse 'active' von allen Links
+                link.classList.remove("active");
+    
+                // Fügt die Klasse 'active' hinzu, wenn die Seite übereinstimmt
+                if (page === currentPage) {
+                    link.classList.add("active");
+                }
+            });
+        }
+    
+        // Funktion zum Anwenden des Fading-In-Effekts
+        function applyFadeIn() {
+            const content = document.querySelector(".content");
+    
+            // Fading-In der Inhalte
+            if (content && !content.classList.contains("fade-in")) {
+                requestAnimationFrame(() => {
+                    content.classList.add("fade-in");
+                });
+            }
+        }
+    
+        // Fading-In und Hervorhebung der aktiven Seite beim Laden der Seite
+        window.addEventListener("load", () => {
+            highlightActivePage();
+            applyFadeIn();
+        });
+        document.addEventListener("DOMContentLoaded", () => {
+            highlightActivePage();
+            applyFadeIn();
+        });
+    
+        // Fading-Out beim Navigieren
+        const links = document.querySelectorAll(".nav-link");
+        links.forEach(link => {
+            link.addEventListener("click", (event) => {
+                event.preventDefault();
+                const href = link.getAttribute("href");
+                const content = document.querySelector(".content");
+    
+                // Fading-Out-Effekt
+                if (content) {
+                    content.classList.remove("fade-in");
+                    content.classList.add("fade-out");
+                }
+    
+                // Verzögerte Navigation, um den Fading-Out-Effekt anzuzeigen
+                setTimeout(() => {
+                    window.location.href = href;
+                }, 500);
+            });
+        });
+    </script>
+    
+    
+    
+    
+    
+    
+    
+</body>
+</html>
